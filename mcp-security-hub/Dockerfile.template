@@ -1,0 +1,114 @@
+# Offensive Security MCP Server - Base Template
+# Copy this file to your MCP server directory and customize
+#
+# Security Features:
+# - Non-root user (uid 1000)
+# - Multi-stage build for minimal image size
+# - Health check included
+# - Minimal base image (Alpine)
+
+# =============================================================================
+# Build Stage
+# =============================================================================
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy package files first for better layer caching
+COPY package*.json ./
+
+# Install all dependencies (including devDependencies for build)
+RUN npm ci && npm cache clean --force
+
+# Copy source code
+COPY . .
+
+# Build if needed (uncomment for TypeScript projects)
+# RUN npm run build
+
+# =============================================================================
+# Production Stage
+# =============================================================================
+FROM node:20-alpine AS production
+
+# Security: Create non-root user
+RUN addgroup -g 1000 mcpuser && \
+    adduser -D -u 1000 -G mcpuser mcpuser
+
+# Install runtime dependencies only
+# Add tool-specific packages here (e.g., nmap, python3)
+RUN apk add --no-cache \
+    ca-certificates \
+    tini \
+    && rm -rf /var/cache/apk/*
+
+WORKDIR /app
+
+# Copy package files
+COPY --chown=mcpuser:mcpuser package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder --chown=mcpuser:mcpuser /app/dist ./dist
+# Or for non-TypeScript: COPY --chown=mcpuser:mcpuser . .
+
+# Copy health check script
+COPY --chown=mcpuser:mcpuser healthcheck.js ./
+
+# Security: Switch to non-root user
+USER mcpuser
+
+# Health check configuration
+# Customize the health check for your specific MCP server
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD node healthcheck.js || exit 1
+
+# Expose MCP server port (adjust as needed)
+EXPOSE 3000
+
+# Use tini as init system for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+
+# Start the MCP server
+CMD ["node", "dist/index.js"]
+
+# =============================================================================
+# Labels for container metadata
+# =============================================================================
+LABEL org.opencontainers.image.source="https://github.com/FuzzingLabs/offensive-security-mcps"
+LABEL org.opencontainers.image.description="Offensive Security MCP Server"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.vendor="Fuzzing Labs"
+
+# =============================================================================
+# Python-based MCP Template (Alternative)
+# Uncomment and customize if your MCP uses Python
+# =============================================================================
+# FROM python:3.12-alpine AS production
+#
+# RUN addgroup -g 1000 mcpuser && \
+#     adduser -D -u 1000 -G mcpuser mcpuser
+#
+# RUN apk add --no-cache \
+#     ca-certificates \
+#     tini \
+#     && rm -rf /var/cache/apk/*
+#
+# WORKDIR /app
+#
+# COPY --chown=mcpuser:mcpuser requirements.txt ./
+# RUN pip install --no-cache-dir -r requirements.txt
+#
+# COPY --chown=mcpuser:mcpuser . .
+#
+# USER mcpuser
+#
+# HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+#     CMD python healthcheck.py || exit 1
+#
+# EXPOSE 3000
+#
+# ENTRYPOINT ["/sbin/tini", "--"]
+# CMD ["python", "server.py"]

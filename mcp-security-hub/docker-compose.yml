@@ -1,0 +1,1189 @@
+# Offensive Security MCP Servers - Docker Compose
+#
+# Usage:
+#   docker-compose up -d                    # Start all services
+#   docker-compose up nuclei-mcp -d         # Start specific service
+#   docker-compose logs -f nuclei-mcp       # View logs
+#   docker-compose down                     # Stop all services
+#
+# Security Notes:
+#   - All containers run as non-root (uid 1000)
+#   - Network isolation via dedicated bridge network
+#   - Read-only filesystems where possible
+#   - Capabilities dropped by default
+
+version: '3.8'
+
+services:
+  # ===========================================================================
+  # Reconnaissance
+  # ===========================================================================
+  nmap-mcp:
+    build:
+      context: ./reconnaissance/nmap-mcp
+      dockerfile: Dockerfile
+    image: nmap-mcp:latest
+    container_name: nmap-mcp
+    ports:
+      - "3001:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW # Required for raw socket scanning
+      - NET_ADMIN # Required for some scan types
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  shodan-mcp:
+    build:
+      context: ./reconnaissance/shodan-mcp
+      dockerfile: Dockerfile
+    image: shodan-mcp:latest
+    container_name: shodan-mcp
+    environment:
+      - SHODAN_API_KEY=${SHODAN_API_KEY:-}
+    ports:
+      - "3002:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:size=64M
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  pd-tools-mcp:
+    build:
+      context: ./reconnaissance/pd-tools-mcp
+      dockerfile: Dockerfile
+    image: pd-tools-mcp:latest
+    container_name: pd-tools-mcp
+    ports:
+      - "3009:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  whatweb-mcp:
+    build:
+      context: ./reconnaissance/whatweb-mcp
+      dockerfile: Dockerfile
+    image: whatweb-mcp:latest
+    container_name: whatweb-mcp
+    environment:
+      - WHATWEB_OUTPUT_DIR=/app/output
+      - WHATWEB_TIMEOUT=${WHATWEB_TIMEOUT:-300}
+    volumes:
+      - whatweb-output:/app/output
+    ports:
+      - "3016:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  masscan-mcp:
+    build:
+      context: ./reconnaissance/masscan-mcp
+      dockerfile: Dockerfile
+    image: masscan-mcp:latest
+    container_name: masscan-mcp
+    environment:
+      - MASSCAN_OUTPUT_DIR=/app/output
+      - MASSCAN_TIMEOUT=${MASSCAN_TIMEOUT:-300}
+      - MASSCAN_MAX_RATE=${MASSCAN_MAX_RATE:-10000}
+    volumes:
+      - masscan-output:/app/output
+    ports:
+      - "3017:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW # Required for raw socket scanning
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+
+  zoomeye-mcp:
+    build:
+      context: ./reconnaissance/zoomeye-mcp
+      dockerfile: Dockerfile
+    image: zoomeye-mcp:latest
+    container_name: zoomeye-mcp
+    environment:
+      - ZOOMEYE_API_KEY=${ZOOMEYE_API_KEY:-}
+    ports:
+      - "3024:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ===========================================================================
+  # Web Security
+  # ===========================================================================
+  nuclei-mcp:
+    build:
+      context: ./web-security/nuclei-mcp
+      dockerfile: Dockerfile
+    image: nuclei-mcp:latest
+    container_name: nuclei-mcp
+    environment:
+      - NUCLEI_RATE_LIMIT=${NUCLEI_RATE_LIMIT:-150}
+      - NUCLEI_SEVERITY=${NUCLEI_SEVERITY:-critical,high,medium}
+      - NUCLEI_TEMPLATES_PATH=/app/templates
+      - NUCLEI_OUTPUT_DIR=/app/output
+      - NUCLEI_TIMEOUT=${NUCLEI_TIMEOUT:-300}
+      - NUCLEI_MAX_CONCURRENT=${NUCLEI_MAX_CONCURRENT:-3}
+    volumes:
+      - nuclei-templates:/app/templates
+      - nuclei-output:/app/output
+    ports:
+      - "3003:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  sqlmap-mcp:
+    build:
+      context: ./web-security/sqlmap-mcp
+      dockerfile: Dockerfile
+    image: sqlmap-mcp:latest
+    container_name: sqlmap-mcp
+    environment:
+      - SQLMAP_OUTPUT_DIR=/app/output
+    volumes:
+      - sqlmap-output:/app/output
+    ports:
+      - "3004:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  nikto-mcp:
+    build:
+      context: ./web-security/nikto-mcp
+      dockerfile: Dockerfile
+    image: nikto-mcp:latest
+    container_name: nikto-mcp
+    environment:
+      - NIKTO_OUTPUT_DIR=/app/output
+      - NIKTO_TIMEOUT=${NIKTO_TIMEOUT:-600}
+    volumes:
+      - nikto-output:/app/output
+    ports:
+      - "3010:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  ffuf-mcp:
+    build:
+      context: ./web-security/ffuf-mcp
+      dockerfile: Dockerfile
+    image: ffuf-mcp:latest
+    container_name: ffuf-mcp
+    environment:
+      - FFUF_OUTPUT_DIR=/app/output
+      - FFUF_TIMEOUT=${FFUF_TIMEOUT:-600}
+      - FFUF_THREADS=${FFUF_THREADS:-40}
+    volumes:
+      - ffuf-output:/app/output
+      - ffuf-wordlists:/app/wordlists
+    ports:
+      - "3015:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+
+  waybackurls-mcp:
+    build:
+      context: ./web-security/waybackurls-mcp
+      dockerfile: Dockerfile
+    image: waybackurls-mcp:latest
+    container_name: waybackurls-mcp
+    environment:
+      - WAYBACKURLS_OUTPUT_DIR=/app/output
+      - WAYBACKURLS_TIMEOUT=${WAYBACKURLS_TIMEOUT:-300}
+    volumes:
+      - waybackurls-output:/app/output
+    ports:
+      - "3020:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # ===========================================================================
+  # Exploitation
+  # ===========================================================================
+  searchsploit-mcp:
+    build:
+      context: ./exploitation/searchsploit-mcp
+      dockerfile: Dockerfile
+    image: searchsploit-mcp:latest
+    container_name: searchsploit-mcp
+    environment:
+      - SEARCHSPLOIT_OUTPUT_DIR=/app/output
+    volumes:
+      - searchsploit-output:/app/output
+    ports:
+      - "3018:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Fuzzing
+  # ===========================================================================
+  dharma-mcp:
+    build:
+      context: ./fuzzing/dharma-mcp
+      dockerfile: Dockerfile
+    image: dharma-mcp:latest
+    container_name: dharma-mcp
+    environment:
+      - DHARMA_GRAMMAR_DIR=/app/grammars
+      - DHARMA_MAX_COUNT=${DHARMA_MAX_COUNT:-1000}
+    volumes:
+      - dharma-grammars:/app/grammars
+      - dharma-output:/app/output
+    ports:
+      - "3022:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+  
+  boofuzz-mcp:
+    build:
+      context: ./fuzzing/boofuzz-mcp
+      dockerfile: Dockerfile
+    image: boofuzz-mcp:latest
+    container_name: boofuzz-mcp
+    environment:
+      - BOOFUZZ_SCRIPT_DIR=/app/scripts
+      - BOOFUZZ_RESULTS_DIR=/app/results
+    volumes:
+      - boofuzz-scripts:/app/scripts
+      - boofuzz-results:/app/results
+    ports:
+      - "3029:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Binary Analysis
+  # ===========================================================================
+  ghidra-mcp:
+    build:
+      context: ./binary-analysis/ghidra-mcp
+      dockerfile: Dockerfile
+    image: ghidra-mcp:latest
+    container_name: ghidra-mcp
+    environment:
+      - GHIDRA_INSTALL_DIR=/opt/ghidra
+    volumes:
+      - ghidra-projects:/app/projects
+      - ghidra-samples:/app/samples:ro
+    ports:
+      - "3006:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+
+  radare2-mcp:
+    build:
+      context: ./binary-analysis/radare2-mcp
+      dockerfile: Dockerfile
+    image: radare2-mcp:latest
+    container_name: radare2-mcp
+    volumes:
+      - radare2-samples:/app/samples:ro
+    ports:
+      - "3007:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  binwalk-mcp:
+    build:
+      context: ./binary-analysis/binwalk-mcp
+      dockerfile: Dockerfile
+    image: binwalk-mcp:latest
+    container_name: binwalk-mcp
+    environment:
+      - BINWALK_OUTPUT_DIR=/app/output
+      - BINWALK_TIMEOUT=${BINWALK_TIMEOUT:-300}
+    volumes:
+      - binwalk-output:/app/output
+      - binwalk-uploads:/app/uploads
+    ports:
+      - "3012:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  yara-mcp:
+    build:
+      context: ./binary-analysis/yara-mcp
+      dockerfile: Dockerfile
+    image: yara-mcp:latest
+    container_name: yara-mcp
+    environment:
+      - YARA_RULES_DIR=/app/rules
+      - YARA_OUTPUT_DIR=/app/output
+      - YARA_TIMEOUT=${YARA_TIMEOUT:-300}
+    volumes:
+      - yara-output:/app/output
+      - yara-samples:/app/samples
+    ports:
+      - "3013:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  capa-mcp:
+    build:
+      context: ./binary-analysis/capa-mcp
+      dockerfile: Dockerfile
+    image: capa-mcp:latest
+    container_name: capa-mcp
+    environment:
+      - CAPA_OUTPUT_DIR=/app/output
+      - CAPA_TIMEOUT=${CAPA_TIMEOUT:-300}
+    volumes:
+      - capa-output:/app/output
+      - capa-samples:/app/samples:ro
+    ports:
+      - "3019:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Blockchain Security
+  # ===========================================================================
+  daml-viewer-mcp:
+    build:
+      context: ./blockchain/daml-viewer-mcp
+      dockerfile: Dockerfile
+    image: daml-viewer-mcp:latest
+    container_name: daml-viewer-mcp
+
+    restart: "no"
+    profiles: [ "on-demand" ]
+
+    environment:
+      - DAML_VIEWER_OUTPUT_DIR=/app/output
+      - DAML_VIEWER_UPLOAD_DIR=/app/uploads
+      - DAML_VIEWER_TIMEOUT=${DAML_VIEWER_TIMEOUT:-120}
+      - DAML_VIEWER_MAX_CONCURRENT=${DAML_VIEWER_MAX_CONCURRENT:-3}
+      - DAML_VIEWER_MAX_FILE_SIZE=${DAML_VIEWER_MAX_FILE_SIZE:-104857600}
+      - DAML_VIEWER_ALLOW_ANY_PATH=${DAML_VIEWER_ALLOW_ANY_PATH:-0}
+
+    volumes:
+      - daml-viewer-output:/app/output
+      - daml-viewer-uploads:/app/uploads
+
+    networks:
+      - mcp-network
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  solazy-mcp:
+    build:
+      context: ./blockchain/solazy-mcp
+      dockerfile: Dockerfile
+    image: solazy-mcp:latest
+    container_name: solazy-mcp
+
+    restart: "no"
+    profiles: [ "on-demand" ]
+
+    environment:
+      - SOLAZY_OUTPUT_DIR=/app/output
+      - SOLAZY_UPLOAD_DIR=/app/uploads
+      - SOLAZY_TIMEOUT=${SOLAZY_TIMEOUT:-300}
+      - SOLAZY_MAX_CONCURRENT=${SOLAZY_MAX_CONCURRENT:-2}
+      - SOLAZY_MAX_FILE_SIZE=${SOLAZY_MAX_FILE_SIZE:-104857600}
+      - SOLAZY_ALLOW_ANY_PATH=${SOLAZY_ALLOW_ANY_PATH:-0}
+
+    volumes:
+      - solazy-output:/app/output
+      - solazy-uploads:/app/uploads
+
+    networks:
+      - mcp-network
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  medusa-mcp:
+    build:
+      context: ./blockchain/medusa-mcp
+      dockerfile: Dockerfile
+    image: medusa-mcp:latest
+    container_name: medusa-mcp
+
+    restart: "no"
+    profiles: [ "on-demand" ]
+
+    environment:
+      - MEDUSA_OUTPUT_DIR=/app/output
+      - MEDUSA_UPLOAD_DIR=/app/uploads
+      - MEDUSA_TIMEOUT=${MEDUSA_TIMEOUT:-600}
+
+    volumes:
+      - medusa-output:/app/output
+      - medusa-uploads:/app/uploads
+
+    networks:
+      - mcp-network
+
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Cloud Security
+  # ===========================================================================
+  trivy-mcp:
+    build:
+      context: ./cloud-security/trivy-mcp
+      dockerfile: Dockerfile
+    image: trivy-mcp:latest
+    container_name: trivy-mcp
+    environment:
+      - TRIVY_OUTPUT_DIR=/app/output
+      - TRIVY_TIMEOUT=${TRIVY_TIMEOUT:-600}
+    volumes:
+      - trivy-output:/app/output
+      - trivy-cache:/home/mcpuser/.cache/trivy
+      - /var/run/docker.sock:/var/run/docker.sock:ro # For local image scanning
+    ports:
+      - "3011:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  prowler-mcp:
+    build:
+      context: ./cloud-security/prowler-mcp
+      dockerfile: Dockerfile
+    image: prowler-mcp:latest
+    container_name: prowler-mcp
+    environment:
+      - PROWLER_OUTPUT_DIR=/app/output
+      - PROWLER_TIMEOUT=${PROWLER_TIMEOUT:-1800}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+    volumes:
+      - prowler-output:/app/output
+    ports:
+      - "3014:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # ===========================================================================
+  # Secrets Detection
+  # ===========================================================================
+  gitleaks-mcp:
+    build:
+      context: ./secrets/gitleaks-mcp
+      dockerfile: Dockerfile
+    image: gitleaks-mcp:latest
+    container_name: gitleaks-mcp
+    environment:
+      - GITLEAKS_OUTPUT_DIR=/app/output
+      - GITLEAKS_TIMEOUT=${GITLEAKS_TIMEOUT:-300}
+    volumes:
+      - gitleaks-output:/app/output
+    ports:
+      - "3021:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # ===========================================================================
+  # Threat Intelligence
+  # ===========================================================================
+  otx-mcp:
+    build:
+      context: ./threat-intel/otx-mcp
+      dockerfile: Dockerfile
+    image: otx-mcp:latest
+    container_name: otx-mcp
+    environment:
+      - OTX_API_KEY=${OTX_API_KEY:-}
+    ports:
+      - "3023:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ===========================================================================
+  # Code Security
+  # ===========================================================================
+  semgrep-mcp:
+    build:
+      context: ./code-security/semgrep-mcp
+      dockerfile: Dockerfile
+    image: semgrep-mcp:latest
+    container_name: semgrep-mcp
+    ports:
+      - "3030:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ===========================================================================
+  # Additional Reconnaissance
+  # ===========================================================================
+  networksdb-mcp:
+    build:
+      context: ./reconnaissance/networksdb-mcp
+      dockerfile: Dockerfile
+    image: networksdb-mcp:latest
+    container_name: networksdb-mcp
+    environment:
+      - NETWORKSDB_API_KEY=${NETWORKSDB_API_KEY:-}
+    ports:
+      - "3025:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  externalattacker-mcp:
+    build:
+      context: ./reconnaissance/externalattacker-mcp
+      dockerfile: Dockerfile
+    image: externalattacker-mcp:latest
+    container_name: externalattacker-mcp
+    ports:
+      - "3026:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+  # ===========================================================================
+  # Additional Cloud Security
+  # ===========================================================================
+  roadrecon-mcp:
+    build:
+      context: ./cloud-security/roadrecon-mcp
+      dockerfile: Dockerfile
+    image: roadrecon-mcp:latest
+    container_name: roadrecon-mcp
+    environment:
+      - ROADRECON_URL=${ROADRECON_URL:-http://localhost:5000}
+    ports:
+      - "3027:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # ===========================================================================
+  # Meta / Security Tooling
+  # ===========================================================================
+  mcp-scan:
+    build:
+      context: ./meta/mcp-scan
+      dockerfile: Dockerfile
+    image: mcp-scan:latest
+    container_name: mcp-scan
+    ports:
+      - "3028:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ===========================================================================
+  # Web Security (additional)
+  # ===========================================================================
+  burp-mcp:
+    build:
+      context: ./web-security/burp-mcp
+      dockerfile: Dockerfile
+    image: burp-mcp:latest
+    container_name: burp-mcp
+    ports:
+      - "3031:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # ===========================================================================
+  # Binary Analysis (additional)
+  # ===========================================================================
+  ida-mcp:
+    build:
+      context: ./binary-analysis/ida-mcp
+      dockerfile: Dockerfile
+    image: ida-mcp:latest
+    container_name: ida-mcp
+    ports:
+      - "3032:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ===========================================================================
+  # OSINT
+  # ===========================================================================
+  maigret-mcp:
+    build:
+      context: ./osint/maigret-mcp
+      dockerfile: Dockerfile
+    image: maigret-mcp:latest
+    container_name: maigret-mcp
+    ports:
+      - "3033:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  dnstwist-mcp:
+    build:
+      context: ./osint/dnstwist-mcp
+      dockerfile: Dockerfile
+    image: dnstwist-mcp:latest
+    container_name: dnstwist-mcp
+    ports:
+      - "3034:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+
+  # ===========================================================================
+  # Threat Intelligence (additional)
+  # ===========================================================================
+  virustotal-mcp:
+    build:
+      context: ./threat-intel/virustotal-mcp
+      dockerfile: Dockerfile
+    image: virustotal-mcp:latest
+    container_name: virustotal-mcp
+    environment:
+      - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY:-}
+    ports:
+      - "3035:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # ===========================================================================
+  # Active Directory
+  # ===========================================================================
+  bloodhound-mcp:
+    build:
+      context: ./active-directory/bloodhound-mcp
+      dockerfile: Dockerfile
+    image: bloodhound-mcp:latest
+    container_name: bloodhound-mcp
+    ports:
+      - "3036:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+  # ===========================================================================
+  # Password Cracking
+  # ===========================================================================
+  hashcat-mcp:
+    build:
+      context: ./password-cracking/hashcat-mcp
+      dockerfile: Dockerfile
+    image: hashcat-mcp:latest
+    container_name: hashcat-mcp
+    ports:
+      - "3037:3000"
+    networks:
+      - mcp-network
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  mcp-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  # Nuclei
+  nuclei-templates:
+    driver: local
+  nuclei-output:
+    driver: local
+
+  # SQLMap
+  sqlmap-output:
+    driver: local
+
+  # Nikto
+  nikto-output:
+    driver: local
+
+  # Ghidra
+  ghidra-projects:
+    driver: local
+  ghidra-samples:
+    driver: local
+
+  # Radare2
+  radare2-samples:
+    driver: local
+
+  # Binwalk
+  binwalk-output:
+    driver: local
+  binwalk-uploads:
+    driver: local
+
+  # YARA
+  yara-output:
+    driver: local
+  yara-samples:
+    driver: local
+
+  # Trivy
+  trivy-output:
+    driver: local
+  trivy-cache:
+    driver: local
+
+  # Prowler
+  prowler-output:
+    driver: local
+
+  # ffuf
+  ffuf-output:
+    driver: local
+  ffuf-wordlists:
+    driver: local
+
+  # WhatWeb
+  whatweb-output:
+    driver: local
+
+  # Masscan
+  masscan-output:
+    driver: local
+
+  # SearchSploit
+  searchsploit-output:
+    driver: local
+
+  # Capa
+  capa-output:
+    driver: local
+  capa-samples:
+    driver: local
+
+  # Waybackurls
+  waybackurls-output:
+    driver: local
+
+  # Gitleaks
+  gitleaks-output:
+    driver: local
+
+  # DAML Viewer
+  daml-viewer-output:
+    driver: local
+  daml-viewer-uploads:
+    driver: local
+
+  # sol-azy
+  solazy-output:
+    driver: local
+  solazy-uploads:
+    driver: local
+
+  # Medusa
+  medusa-output:
+    driver: local
+  medusa-uploads:
+    driver: local
+
+  # Dharma
+  dharma-grammars:
+    driver: local
+  dharma-output:
+    driver: local
+
+  # Boofuzz
+  boofuzz-scripts:
+    driver: local
+  boofuzz-results:
+    driver: local

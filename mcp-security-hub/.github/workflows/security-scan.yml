@@ -1,0 +1,215 @@
+# Security Scanning Pipeline for Offensive Security MCP Servers
+#
+# This workflow:
+# - Scans Docker images for vulnerabilities using Trivy
+# - Performs SBOM generation
+# - Checks for secrets in code
+# - Runs on schedule and on PRs
+
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run weekly on Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_PREFIX: fuzzinglabs
+
+jobs:
+  # ===========================================================================
+  # Scan repository for secrets
+  # ===========================================================================
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ===========================================================================
+  # Scan Dockerfiles for best practices
+  # ===========================================================================
+  dockerfile-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Find Dockerfiles
+        id: find-dockerfiles
+        run: |
+          DOCKERFILES=$(find . -name "Dockerfile" -type f | tr '\n' ' ')
+          echo "files=$DOCKERFILES" >> $GITHUB_OUTPUT
+
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ${{ steps.find-dockerfiles.outputs.files }}
+          failure-threshold: error
+          ignore: DL3018,DL3008  # Allow apk/apt without version pinning for flexibility
+
+  # ===========================================================================
+  # Scan Docker images for vulnerabilities
+  # ===========================================================================
+  trivy-scan:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - reconnaissance/nmap-mcp
+          - reconnaissance/shodan-mcp
+          - web-security/nuclei-mcp
+          - web-security/sqlmap-mcp
+          - exploitation/metasploit-mcp
+          - binary-analysis/ghidra-mcp
+          - binary-analysis/radare2-mcp
+          - mobile-security/mobsf-mcp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check if Dockerfile exists
+        id: check-dockerfile
+        run: |
+          if [ -f "${{ matrix.server }}/Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build image for scanning
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        run: |
+          IMAGE_NAME=$(basename "${{ matrix.server }}")
+          docker build -t scan-target:$IMAGE_NAME ./${{ matrix.server }}
+
+      - name: Run Trivy vulnerability scanner
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'scan-target:${{ matrix.server }}'
+          format: 'sarif'
+          output: 'trivy-results-${{ matrix.server }}.sarif'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+
+      - name: Upload Trivy scan results
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results-${{ matrix.server }}.sarif'
+          category: 'trivy-${{ matrix.server }}'
+
+      - name: Run Trivy and fail on HIGH/CRITICAL
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'scan-target:${{ matrix.server }}'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+
+  # ===========================================================================
+  # Generate SBOM for built images
+  # ===========================================================================
+  sbom-generation:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        server:
+          - reconnaissance/nmap-mcp
+          - web-security/nuclei-mcp
+          - binary-analysis/ghidra-mcp
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check if Dockerfile exists
+        id: check-dockerfile
+        run: |
+          if [ -f "${{ matrix.server }}/Dockerfile" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build image
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        run: |
+          IMAGE_NAME=$(basename "${{ matrix.server }}")
+          docker build -t sbom-target:$IMAGE_NAME ./${{ matrix.server }}
+
+      - name: Generate SBOM with Syft
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: anchore/sbom-action@v0
+        with:
+          image: 'sbom-target:${{ matrix.server }}'
+          format: spdx-json
+          output-file: 'sbom-${{ matrix.server }}.spdx.json'
+
+      - name: Upload SBOM artifact
+        if: steps.check-dockerfile.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ matrix.server }}
+          path: 'sbom-${{ matrix.server }}.spdx.json'
+
+  # ===========================================================================
+  # Dependency scanning for package files
+  # ===========================================================================
+  dependency-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-fs-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy filesystem results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-fs-results.sarif'
+          category: 'trivy-filesystem'
+
+  # ===========================================================================
+  # Summary report
+  # ===========================================================================
+  security-summary:
+    needs: [secret-scan, dockerfile-lint, trivy-scan, dependency-scan]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Security scan summary
+        run: |
+          echo "## Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Secret Scan | ${{ needs.secret-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dockerfile Lint | ${{ needs.dockerfile-lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Trivy Image Scan | ${{ needs.trivy-scan.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dependency Scan | ${{ needs.dependency-scan.result }} |" >> $GITHUB_STEP_SUMMARY
