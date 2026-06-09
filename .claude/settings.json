@@ -3,7 +3,8 @@
     "SessionStart": [
       {
         "hooks": [
-          { "type": "command", "command": "bash shared/scripts/sync-skill.sh" }
+          { "type": "command", "command": "bash shared/scripts/sync-skill.sh" },
+          { "type": "command", "command": "agentmemory status --quiet 2>/dev/null || agentmemory > /tmp/agentmemory.log 2>&1 &" }
         ]
       }
     ]
