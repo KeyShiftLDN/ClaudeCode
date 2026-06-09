@@ -9,3 +9,8 @@
 - **Cost disclosure:** Always present credit totals as **estimates** — Arcads has no billing endpoint. Tell the user to confirm exact pricing in the Arcads platform.
 - **Logging:** Log every generation call to `logs/arcads-api.jsonl`.
 - **First-time setup:** If `.env` is missing, run `./scripts/setup.sh`. If `MASTER_CONTEXT.md` is missing, copy `MASTER_CONTEXT.template.md` to `MASTER_CONTEXT.md`.
+
+# pro-workflow plugin
+
+Installed via `claude plugin install pro-workflow@pro-workflow` (user scope, v3.3.0).
+Key commands: `/learn-rule`, `/wrap-up`, `/wiki init <slug>`, `/develop`, `/smart-commit`, `/doctor`.
