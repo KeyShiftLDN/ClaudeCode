@@ -23,3 +23,4 @@ scripts/generate-ab-variants*.sh
 scripts/regen-*.sh
 skills/ui-ux-pro-max/scripts/__pycache__/
 .mcp.json
+data/
