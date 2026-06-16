@@ -55,6 +55,12 @@
       "skillPath": "plugin/skills/forget/SKILL.md",
       "computedHash": "0aecb46743b0b06de5c4d70af1cef72dc1ca22fc3c9c579b418855b6d6c2d485"
     },
+    "hallmark": {
+      "source": "nutlope/hallmark",
+      "sourceType": "github",
+      "skillPath": "skills/hallmark/SKILL.md",
+      "computedHash": "8a8ecafd613f09e701330b5aa4a591ac539abb2605596df4a2394f03628d1d76"
+    },
     "handoff": {
       "source": "rohitg00/agentmemory",
       "sourceType": "github",
