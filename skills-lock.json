@@ -91,6 +91,12 @@
       "skillPath": "plugin/skills/session-history/SKILL.md",
       "computedHash": "ece45f2f4db16fa213f2f46ddfdba271a4281f9ba0d0bcec69ac5e7d0075c0a7"
     },
+    "video-use": {
+      "source": "browser-use/video-use",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "83f4c3636a80d4c69db8a80ed04fa3d05bbb65cd0a5879a0684e16322cd92637"
+    },
     "write-agentmemory-skill": {
       "source": "rohitg00/agentmemory",
       "sourceType": "github",
