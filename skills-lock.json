@@ -507,6 +507,48 @@
     },
     "stop-slop": {
       "source": "hardikpandya/stop-slop"
+    },
+    "superpowers-brainstorming": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-dispatching-parallel-agents": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-executing-plans": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-finishing-a-development-branch": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-receiving-code-review": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-requesting-code-review": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-subagent-driven-development": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-systematic-debugging": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-test-driven-development": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-using-git-worktrees": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-using-superpowers": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-verification-before-completion": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-writing-plans": {
+      "source": "obra/Superpowers"
+    },
+    "superpowers-writing-skills": {
+      "source": "obra/Superpowers"
     }
   }
 }
