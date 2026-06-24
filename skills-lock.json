@@ -504,6 +504,9 @@
     },
     "ui-ux-pro-max": {
       "source": "calesthio/OpenMontage"
+    },
+    "stop-slop": {
+      "source": "hardikpandya/stop-slop"
     }
   }
 }
