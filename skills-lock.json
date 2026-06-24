@@ -549,6 +549,9 @@
     },
     "superpowers-writing-skills": {
       "source": "obra/Superpowers"
+    },
+    "refero-design": {
+      "source": "referodesign/refero_skill"
     }
   }
 }
