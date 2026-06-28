@@ -1,0 +1,11 @@
+name = "ksl-security-headers"
+main = "cloudflare-worker.js"
+compatibility_date = "2026-06-01"
+
+# Run the Worker on every request to the apex + www.
+# Requires the zone keyshiftlondon.org to be active on your Cloudflare account
+# (nameservers pointed at Cloudflare) — see security-headers.md step 1.
+routes = [
+  { pattern = "keyshiftlondon.org/*", zone_name = "keyshiftlondon.org" },
+  { pattern = "www.keyshiftlondon.org/*", zone_name = "keyshiftlondon.org" },
+]
