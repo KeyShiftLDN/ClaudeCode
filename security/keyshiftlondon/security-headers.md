@@ -87,10 +87,38 @@ Set static  Content-Security-Policy        default-src 'self'; base-uri 'self'; 
 
 ---
 
+## CSP source allowlist (per service)
+
+The Worker's CSP is tuned for **Google Fonts + GA4 + booking/payments + Instagram**.
+Use this table to add/remove providers. Add each origin to the listed directive.
+
+| Service | Directive(s) → origin(s) |
+|---------|--------------------------|
+| **Google Fonts** | `style-src https://fonts.googleapis.com` · `font-src https://fonts.gstatic.com` |
+| **Google Analytics 4 / gtag** | `script-src https://www.googletagmanager.com` · `connect-src https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com` |
+| **Stripe** | `script-src https://js.stripe.com` · `frame-src https://js.stripe.com https://hooks.stripe.com` · `connect-src https://api.stripe.com` |
+| **Calendly** | `script-src https://assets.calendly.com` · `style-src https://assets.calendly.com` · `frame-src https://calendly.com` |
+| **Acuity Scheduling** | `frame-src https://app.acuityscheduling.com https://secure.acuityscheduling.com` · `script-src https://embed.acuityscheduling.com` |
+| **Square Appointments** | `frame-src https://square.site https://*.squareup.com` · `script-src https://*.squarecdn.com` |
+| **Instagram embeds** | `script-src https://www.instagram.com https://platform.instagram.com` · `frame-src https://www.instagram.com` (images come from `*.cdninstagram.com`, already covered by `img-src https:`) |
+
+**Which payment/booking block to keep:** the Worker ships with **both Stripe and
+Calendly**. Delete whichever the site doesn't use. If booking is Acuity or Square
+instead, swap those rows in.
+
+### Inline-script caveat (important for GA)
+If Google Analytics is wired in as an **inline `<script>` gtag snippet** (the
+copy-paste block from GA), the strict `script-src` will block it. Two clean fixes:
+1. Move the snippet into a self-hosted `.js` file (covered by `script-src 'self'`), or
+2. Serve GA through a **GTM container** (already allowlisted via `googletagmanager.com`).
+
+Avoid adding `'unsafe-inline'` to `script-src` — it defeats most of the CSP's XSS
+protection. The report-only rollout will tell you immediately if this is an issue.
+
 ## Notes
-- **Tune the CSP.** The defaults assume Google Fonts + GA4. If Key Shift London
-  loads anything else (Calendly, Stripe, YouTube embeds, a CDN), add those origins
-  or the page features will silently break under enforcement.
+- **Tune the CSP.** It's set for the services you confirmed. If the site later adds
+  anything else (YouTube, Maps, a chat widget, a CDN), add those origins or the
+  feature will silently break under enforcement.
 - **HSTS preload** is sticky — only submit to hstspreload.org once you're certain
   all subdomains will always be HTTPS.
 - You already have the Cloudflare MCP servers registered (`cloudflare-bindings`,

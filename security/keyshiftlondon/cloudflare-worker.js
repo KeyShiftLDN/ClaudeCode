@@ -17,23 +17,38 @@
 // Flip to false once the CSP has been validated against the live site.
 const REPORT_ONLY = true;
 
-// Tune these to what the site actually loads. Defaults cover a static
-// marketing site with Google Fonts + Google Analytics (GA4). Remove what
-// you don't use — tighter is better.
+// Tuned for Key Shift London's actual stack:
+//   Google Fonts · Google Analytics (GA4/gtag) · booking+payments · Instagram embeds
+//
+// PAYMENTS/BOOKING: both Stripe and Calendly are included below. DELETE the
+// block for whichever provider the site does NOT use. If booking is actually
+// Acuity/Squarespace/Square, swap in those origins (see security-headers.md).
 const CSP = [
   "default-src 'self'",
   "base-uri 'self'",
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
+
+  // images: self + data URIs + any https (covers GA pixels, IG/Stripe CDNs)
   "img-src 'self' data: https:",
-  // Google Fonts stylesheet + inline styles many static themes need.
-  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+
+  // styles: Google Fonts CSS + inline styles most static themes require
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
   "font-src 'self' https://fonts.gstatic.com",
-  // GA4 / gtag. Drop these two lines if the site has no analytics.
-  "script-src 'self' https://www.googletagmanager.com",
-  "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com",
-  "frame-src 'self'",
+
+  // scripts: GA4/gtag + Stripe.js + Calendly + Instagram embed.js
+  // NOTE: if GA is added via an INLINE gtag snippet (not a GTM container),
+  // you must add 'unsafe-inline' here OR the snippet's sha256 hash, or the
+  // analytics init will be blocked. Prefer loading it from a file/GTM.
+  "script-src 'self' https://www.googletagmanager.com https://js.stripe.com https://assets.calendly.com https://www.instagram.com https://platform.instagram.com",
+
+  // XHR/fetch/beacon: GA4 collect endpoints + Stripe API + Calendly
+  "connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://api.stripe.com https://calendly.com",
+
+  // iframes the page is allowed to embed: Stripe, Calendly, Instagram
+  "frame-src https://js.stripe.com https://hooks.stripe.com https://calendly.com https://www.instagram.com",
+
   "upgrade-insecure-requests",
 ].join("; ");
 
