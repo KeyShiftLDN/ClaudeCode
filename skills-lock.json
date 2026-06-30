@@ -552,6 +552,9 @@
     },
     "refero-design": {
       "source": "referodesign/refero_skill"
+    },
+    "distribb": {
+      "source": "Bomx/distribb-skill"
     }
   }
 }
