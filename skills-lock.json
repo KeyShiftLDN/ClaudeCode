@@ -555,6 +555,11 @@
     },
     "distribb": {
       "source": "Bomx/distribb-skill"
+    },
+    "motion-framer": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/motion-framer/SKILL.md"
     }
   }
 }
