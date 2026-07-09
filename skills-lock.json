@@ -570,6 +570,11 @@
       "source": "pbakaus/impeccable",
       "sourceType": "github",
       "skillPath": ".claude/skills/impeccable/SKILL.md"
+    },
+    "prompt-master": {
+      "source": "nidhinjs/prompt-master",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
     }
   }
 }
