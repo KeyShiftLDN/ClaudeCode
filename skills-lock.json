@@ -575,6 +575,11 @@
       "source": "nidhinjs/prompt-master",
       "sourceType": "github",
       "skillPath": "SKILL.md"
+    },
+    "frontend-design": {
+      "source": "Ilm-Alan/frontend-design",
+      "sourceType": "github",
+      "skillPath": "SKILL.md"
     }
   }
 }
