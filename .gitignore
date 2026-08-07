@@ -25,3 +25,5 @@ skills/ui-ux-pro-max/scripts/__pycache__/
 .mcp.json
 data/
 .agents/
+tools/watermelon-platform/node_modules/
+tools/watermelon-platform/package-lock.json

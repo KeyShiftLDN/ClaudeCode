@@ -1,0 +1,6 @@
+name = "watermelon-preview"
+compatibility_date = "2024-04-05"
+
+[assets]
+directory = "./dist"
+not_found_handling = "single-page-application"

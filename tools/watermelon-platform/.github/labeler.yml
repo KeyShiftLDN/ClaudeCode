@@ -1,0 +1,42 @@
+# Label incoming PRs automatically
+
+components:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: 'src/components/**/*'
+      - any-glob-to-any-file: 'src/data/contents/components/**/*'
+
+blocks:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: 'src/data/contents/blocks/**/*'
+
+dashboards:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: 'src/data/contents/dashboards/**/*'
+
+documentation:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: 'README.md'
+      - any-glob-to-any-file: 'CONTRIBUTING.md'
+      - any-glob-to-any-file: 'CODE_OF_CONDUCT.md'
+      - any-glob-to-any-file: 'SECURITY.md'
+      - any-glob-to-any-file: 'AI_POLICY.md'
+      - any-glob-to-any-file: 'CHANGELOG.md'
+      - any-glob-to-any-file: 'docs/**/*'
+
+ci-cd:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: '.github/**/*'
+      - any-glob-to-any-file: 'package.json'
+      - any-glob-to-any-file: 'bun.lockb'
+
+website:
+  - any:
+    - changed-files:
+      - any-glob-to-any-file: 'src/pages/**/*'
+      - any-glob-to-any-file: 'src/lib/**/*'
+      - any-glob-to-any-file: 'index.html'
