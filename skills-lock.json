@@ -580,6 +580,11 @@
       "source": "Ilm-Alan/frontend-design",
       "sourceType": "github",
       "skillPath": "SKILL.md"
+    },
+    "make-interfaces-feel-better": {
+      "source": "WatermelonCorp/watermelon-platform",
+      "sourceType": "github",
+      "skillPath": "skills/make-interfaces-feel-better/SKILL.md"
     }
   }
 }
