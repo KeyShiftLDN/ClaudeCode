@@ -585,6 +585,11 @@
       "source": "WatermelonCorp/watermelon-platform",
       "sourceType": "github",
       "skillPath": "skills/make-interfaces-feel-better/SKILL.md"
+    },
+    "brag": {
+      "source": "latent-spaces/brag",
+      "sourceType": "github",
+      "skillPath": "skills/brag/SKILL.md"
     }
   }
 }
