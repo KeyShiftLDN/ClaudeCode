@@ -590,6 +590,71 @@
       "source": "latent-spaces/brag",
       "sourceType": "github",
       "skillPath": "skills/brag/SKILL.md"
+    },
+    "taste-brandkit": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-brandkit/SKILL.md"
+    },
+    "taste-brutalist-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-brutalist-skill/SKILL.md"
+    },
+    "taste-gpt-tasteskill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-gpt-tasteskill/SKILL.md"
+    },
+    "taste-image-to-code-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-image-to-code-skill/SKILL.md"
+    },
+    "taste-imagegen-frontend-mobile": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-imagegen-frontend-mobile/SKILL.md"
+    },
+    "taste-imagegen-frontend-web": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-imagegen-frontend-web/SKILL.md"
+    },
+    "taste-minimalist-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-minimalist-skill/SKILL.md"
+    },
+    "taste-output-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-output-skill/SKILL.md"
+    },
+    "taste-redesign-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-redesign-skill/SKILL.md"
+    },
+    "taste-soft-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-soft-skill/SKILL.md"
+    },
+    "taste-stitch-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-stitch-skill/SKILL.md"
+    },
+    "taste-taste-skill-v1": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-taste-skill-v1/SKILL.md"
+    },
+    "taste-taste-skill": {
+      "source": "leonxlnx/taste-skill",
+      "sourceType": "github",
+      "skillPath": "skills/taste-taste-skill/SKILL.md"
     }
   }
 }
