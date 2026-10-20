@@ -655,6 +655,12 @@
       "source": "leonxlnx/taste-skill",
       "sourceType": "github",
       "skillPath": "skills/taste-taste-skill/SKILL.md"
+    },
+    "harvey": {
+      "source": "ethanplusai/harvey",
+      "sourceType": "github",
+      "skillPath": "(standalone tool, pip install)",
+      "version": "0.3.0"
     }
   }
 }
