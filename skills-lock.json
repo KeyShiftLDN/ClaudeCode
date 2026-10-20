@@ -679,6 +679,30 @@
       "sourceType": "github",
       "skillPath": "(library, pip install weasyprint)",
       "version": "70.0"
+    },
+    "recharts": {
+      "source": "recharts/recharts",
+      "sourceType": "github",
+      "skillPath": "(library, npm install -g recharts)",
+      "version": "3.10.1"
+    },
+    "playwright": {
+      "source": "microsoft/playwright",
+      "sourceType": "github",
+      "skillPath": "(library, already installed)",
+      "version": "1.64.0"
+    },
+    "pip-audit": {
+      "source": "pypa/pip-audit",
+      "sourceType": "github",
+      "skillPath": "(tool, pip install pip-audit)",
+      "version": "2.10.1"
+    },
+    "instructor": {
+      "source": "instructor-ai/instructor",
+      "sourceType": "github",
+      "skillPath": "(library, pip install instructor)",
+      "version": "1.17.0"
     }
   }
 }
