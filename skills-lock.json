@@ -673,6 +673,12 @@
       "sourceType": "github",
       "skillPath": "(library, pip install resend)",
       "version": "2.50.0"
+    },
+    "weasyprint": {
+      "source": "Kozea/WeasyPrint",
+      "sourceType": "github",
+      "skillPath": "(library, pip install weasyprint)",
+      "version": "70.0"
     }
   }
 }
