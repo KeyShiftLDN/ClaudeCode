@@ -703,6 +703,25 @@
       "sourceType": "github",
       "skillPath": "(library, pip install instructor)",
       "version": "1.17.0"
+    },
+    "plausible-analytics": {
+      "source": "plausible/analytics",
+      "sourceType": "github",
+      "skillPath": "(reference + plausible-tracker npm)",
+      "version": "0.3.9",
+      "note": "Privacy-first web analytics. Self-hosted Elixir app; tracker script installed via npm."
+    },
+    "sentry-javascript": {
+      "source": "getsentry/sentry-javascript",
+      "sourceType": "github",
+      "skillPath": "(library, npm @sentry/node + @sentry/browser)",
+      "version": "11.8.0"
+    },
+    "sentry-python": {
+      "source": "getsentry/sentry-python",
+      "sourceType": "github",
+      "skillPath": "(library, pip install sentry-sdk)",
+      "version": "2.72.0"
     }
   }
 }
