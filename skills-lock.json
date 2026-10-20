@@ -661,6 +661,12 @@
       "sourceType": "github",
       "skillPath": "(standalone tool, pip install)",
       "version": "0.3.0"
+    },
+    "starter-workflows": {
+      "source": "actions/starter-workflows",
+      "sourceType": "github",
+      "skillPath": "(reference, tools/starter-workflows/)",
+      "note": "180 GitHub Actions workflow templates: CI, deployment, automation, code-scanning, pages"
     }
   }
 }
