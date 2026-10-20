@@ -667,6 +667,12 @@
       "sourceType": "github",
       "skillPath": "(reference, tools/starter-workflows/)",
       "note": "180 GitHub Actions workflow templates: CI, deployment, automation, code-scanning, pages"
+    },
+    "resend-python": {
+      "source": "resend/resend-python",
+      "sourceType": "github",
+      "skillPath": "(library, pip install resend)",
+      "version": "2.50.0"
     }
   }
 }
