@@ -722,6 +722,13 @@
       "sourceType": "github",
       "skillPath": "(library, pip install sentry-sdk)",
       "version": "2.72.0"
+    },
+    "sentry-agent-plugin": {
+      "source": "getsentry/sentry-ai-agent",
+      "sourceType": "github",
+      "skillPath": "(plugin, sentry@claude-plugins-official)",
+      "version": "1.4.0",
+      "note": "Sentry for AI agents - org: key-shift-london"
     }
   }
 }
