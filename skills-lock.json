@@ -743,6 +743,12 @@
       "skillPath": "(MCP server, uvx mcp-search-console)",
       "version": "0.4.1",
       "note": "Google Search Console MCP server for SEO analytics, URL inspection, sitemap management. Needs Google OAuth client_secrets.json."
+    },
+    "open-higgsfield": {
+      "source": "wide-trace/open-higgsfield",
+      "sourceType": "github",
+      "skillPath": "(app, tools/open-higgsfield/)",
+      "note": "Open-source Higgsfield AI alternative. Next.js 16 studio with 38 image/video models. Run: cd tools/open-higgsfield && npm run dev"
     }
   }
 }
