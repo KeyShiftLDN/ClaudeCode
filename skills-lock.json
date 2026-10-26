@@ -736,6 +736,13 @@
       "skillPath": "(tool + skill, uv tool install)",
       "version": "1.6.0",
       "note": "Internet access for AI agents: web, YouTube, GitHub, Bilibili, V2EX, and more"
+    },
+    "mcp-gsc": {
+      "source": "AminForou/mcp-gsc",
+      "sourceType": "github",
+      "skillPath": "(MCP server, uvx mcp-search-console)",
+      "version": "0.4.1",
+      "note": "Google Search Console MCP server for SEO analytics, URL inspection, sitemap management. Needs Google OAuth client_secrets.json."
     }
   }
 }
