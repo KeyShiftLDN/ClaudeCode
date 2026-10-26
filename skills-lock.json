@@ -729,6 +729,13 @@
       "skillPath": "(plugin, sentry@claude-plugins-official)",
       "version": "1.4.0",
       "note": "Sentry for AI agents - org: key-shift-london"
+    },
+    "agent-reach": {
+      "source": "Panniantong/agent-reach",
+      "sourceType": "github",
+      "skillPath": "(tool + skill, uv tool install)",
+      "version": "1.6.0",
+      "note": "Internet access for AI agents: web, YouTube, GitHub, Bilibili, V2EX, and more"
     }
   }
 }
