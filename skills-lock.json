@@ -749,6 +749,66 @@
       "sourceType": "github",
       "skillPath": "(app, tools/open-higgsfield/)",
       "note": "Open-source Higgsfield AI alternative. Next.js 16 studio with 38 image/video models. Run: cd tools/open-higgsfield && npm run dev"
+    },
+    "openseo-ai-prompt-research": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-ai-prompt-research/SKILL.md"
+    },
+    "openseo-ai-visibility-audit": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-ai-visibility-audit/SKILL.md"
+    },
+    "openseo-competitive-landscape": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-competitive-landscape/SKILL.md"
+    },
+    "openseo-competitor-analysis": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-competitor-analysis/SKILL.md"
+    },
+    "openseo-keyword-clustering": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-keyword-clustering/SKILL.md"
+    },
+    "openseo-keyword-research": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-keyword-research/SKILL.md"
+    },
+    "openseo-link-prospecting": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-link-prospecting/SKILL.md"
+    },
+    "openseo-local-seo": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-local-seo/SKILL.md"
+    },
+    "openseo-seo-audit": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-seo-audit/SKILL.md"
+    },
+    "openseo-seo-coach": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-seo-coach/SKILL.md"
+    },
+    "openseo-seo-project-setup": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-seo-project-setup/SKILL.md"
+    },
+    "openseo-seo-report": {
+      "source": "every-app/open-seo",
+      "sourceType": "github",
+      "skillPath": "skills/openseo-seo-report/SKILL.md"
     }
   }
 }
