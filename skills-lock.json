@@ -815,6 +815,61 @@
       "sourceType": "github",
       "skillPath": "skills/awesome-design-md/design-md/",
       "note": "Reference collection of 84 DESIGN.md files from real websites (Apple, Stripe, Linear, etc.) for AI-driven UI generation"
+    },
+    "founder-board": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-board/SKILL.md"
+    },
+    "founder-brand": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-brand/SKILL.md"
+    },
+    "founder-cfo": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-cfo/SKILL.md"
+    },
+    "founder-competitors": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-competitors/SKILL.md"
+    },
+    "founder-consumer": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-consumer/SKILL.md"
+    },
+    "founder-launch": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-launch/SKILL.md"
+    },
+    "founder-marketing": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-marketing/SKILL.md"
+    },
+    "founder-offer": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-offer/SKILL.md"
+    },
+    "founder-ops": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-ops/SKILL.md"
+    },
+    "founder-plan": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-plan/SKILL.md"
+    },
+    "founder-pricing": {
+      "source": "Jakeschincariol/founder-skill",
+      "sourceType": "github",
+      "skillPath": "skills/founder-pricing/SKILL.md"
     }
   }
 }
