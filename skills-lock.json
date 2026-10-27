@@ -809,6 +809,12 @@
       "source": "every-app/open-seo",
       "sourceType": "github",
       "skillPath": "skills/openseo-seo-report/SKILL.md"
+    },
+    "awesome-design-md": {
+      "source": "voltagent/awesome-design-md",
+      "sourceType": "github",
+      "skillPath": "skills/awesome-design-md/design-md/",
+      "note": "Reference collection of 84 DESIGN.md files from real websites (Apple, Stripe, Linear, etc.) for AI-driven UI generation"
     }
   }
 }
