@@ -1,0 +1,109 @@
+persona:
+  name: Emmanuel Adeyemi
+  company: Key Shift London CIC
+  role: Founder & Managing Director
+  email: hello@keyshiftlondon.org
+  linkedin: ''
+  tone: warm, direct, practitioner-to-practitioner; plain British English, no jargon
+product:
+  name: Precision Streamline System (Precision Training, PILLAR coaching, PRE:CORD)
+  description: Key Shift London CIC trains and equips the adults around young people aged 11-18 in South
+    London (mentors, coaches, youth workers, pastoral leads) and gives organisations PRE:CORD, a platform
+    to record sessions, track each young person's progress, keep live safeguarding oversight and report
+    outcomes funders trust.
+  pricing: Precision Training Level 1 free; Level 2 £34.99 per practitioner; PRE:CORD 30-day free trial,
+    no card; facilitator, cohort and organisation licences on enquiry.
+  key_benefits:
+  - Outcome evidence funders and commissioners can actually report, not activity counts
+  - Free, self-paced Level 1 training so staff and volunteers share one method (the SHAPE model)
+  - Live safeguarding oversight built into PRE:CORD, designed by a DSL Level 3 practitioner
+  - 'Sports academies: a structured off-pitch identity and life-skills pathway players own'
+  objection_responses:
+    no budget: Level 1 training is free and PRE:CORD has a 30-day trial with no card, so you can see if
+      it fits before any spend.
+    we already track outcomes: Makes sense. What does it take your team to pull a funder report together
+      today?
+    too busy: Understood. Level 1 is self-paced, so staff can do it in their own time. Worth a 20-minute
+      look when things calm down?
+    not interested: No problem at all, thanks for letting me know.
+  offer:
+    primary: PRE:CORD organisation licence with team training
+    entry: Free Level 1 Precision Training for your staff, or a 30-day PRE:CORD trial
+    goal: book_call
+    booking_method: calendar_link
+    booking_url: https://cal.com/key-shift-london-uwjros/30min
+    meeting_duration: 20 minutes
+    meeting_owner: Emmanuel Adeyemi
+icp:
+  industries:
+  - youth charity
+  - youth club
+  - sports academy
+  - football academy
+  - boxing club
+  - community youth organisation
+  company_size: 2-50 employees
+  titles:
+  - CEO
+  - Founder
+  - Director
+  - Programme Manager
+  - Head of Youth Services
+  - Youth Work Manager
+  - Safeguarding Lead
+  - Academy Manager
+  - Head of Education and Welfare
+  - Player Welfare Officer
+  geography:
+  - Croydon, United Kingdom
+  - Lambeth, United Kingdom
+  - Southwark, United Kingdom
+  hiring_signals:
+  - Youth Worker
+  - Mentor
+  - Programme Coordinator
+  - Safeguarding Lead
+  - Player Welfare Officer
+channels:
+  email:
+    enabled: true
+    provider: gmail
+    max_daily_sends: 15
+    require_approval: true
+    send_to_risky: false
+    max_bounce_rate: 0.05
+    warmup:
+      start_date: ''
+      min_days: 14
+      start_sends: 5
+      daily_increase: 3
+      dkim_selector: ''
+    link_domains:
+    - keyshiftlondon.org
+    - cal.com
+    send_window:
+      start: 09:00
+      end: '16:00'
+      weekdays_only: true
+      recipient_timezone: false
+  linkedin:
+    enabled: false
+    max_daily_connections: 20
+    max_daily_messages: 10
+usage:
+  max_daily_claude_percent: 80
+  heartbeat_interval_minutes: 15
+  quiet_hours:
+    start: '19:00'
+    end: 08:00
+    timezone: Europe/London
+compliance:
+  postal_address: Key Shift London CIC (Reg. 15685849), South Croydon, CR2 6NB
+  opt_out_line: Not for you? Reply "no thanks" and I won't email again.
+  do_not_contact:
+  - keyshiftlondon.org
+  precleared:
+    enabled: true
+    sender_country: GB
+    address_source: published
+    prospect_country: GB
