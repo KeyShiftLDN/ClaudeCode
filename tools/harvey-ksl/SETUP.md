@@ -31,5 +31,6 @@
   small charities and clubs count as individuals under PECR and need consent).
 
 ## Check before first send
-- compliance.postal_address: add your full street address.
+- compliance.postal_address: add your full street address in your local copy only (this repo is public).
+- SERPER_API_KEY goes in Harvey's .env only. Never commit it.
 - Main domain risk: keep it at 10-15 a day and stop if bounces go over ~3%.
